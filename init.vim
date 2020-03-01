@@ -17,9 +17,7 @@ call plug#begin()
     Plug 'tpope/vim-abolish'
 
 " UI
-    Plug 'balanceiskey/vim-framer-syntax'
     Plug 'liuchengxu/space-vim-theme'
-    Plug 'arzg/vim-colors-xcode'
     Plug 'itchyny/lightline.vim'
     Plug 'christoomey/vim-tmux-navigator'
     Plug 'liuchengxu/vista.vim'
