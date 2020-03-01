@@ -42,12 +42,15 @@ call plug#begin()
     Plug 'hail2u/vim-css3-syntax'
     Plug 'styled-components/vim-styled-components', { 'branch': 'main' }
 
-" Language servers
-    Plug 'prabirshrestha/async.vim'
-    Plug 'prabirshrestha/vim-lsp'
-    Plug 'mattn/vim-lsp-settings'
+" Language server
+    Plug 'neovim/nvim-lsp'
+
+" Autocompletion
     Plug 'prabirshrestha/asyncomplete.vim'
-    Plug 'prabirshrestha/asyncomplete-lsp.vim'
+    Plug 'yami-beta/asyncomplete-omni.vim'
+
+" Testing
+    Plug 'janko/vim-test'
 
 call plug#end()
 
@@ -62,7 +65,7 @@ call plug#end()
     set clipboard+=unnamedplus
 
     " Fixes an issue where netrw yanks empty line
-    let g:netrw_banner = 1
+    let g:netrw_banner = 0
 
 " UI
     set termguicolors
@@ -140,20 +143,54 @@ call plug#end()
 
 " Vista
     " Use coc.nvim LSP symbols.
-    " let g:vista_default_executive = 'coc'
+    let g:vista_default_executive = 'nvim_lsp'
 
     " Disable special icons (displaying icons requires special font).
     let g:vista#renderer#enable_icon = 0
+    let g:vista_icon_indent = ["╰─▸ ", "├─▸ "]
 
     " Set default width.
     let g:vista_sidebar_width = 50
 
 
-" vim-lsp
-    let g:lsp_signs_error = {'text': '✗'}
-    let g:lsp_signs_warning = {'text': '‼'}
-    let g:lsp_signs_hint = {'text': '>'}
+" Language server
+    lua require'nvim_lsp'.tsserver.setup{}
 
-map <F10> :echo "hi<" . synIDattr(synID(line("."),col("."),1),"name") . '> trans<'
-\ . synIDattr(synID(line("."),col("."),0),"name") . "> lo<"
-\ . synIDattr(synIDtrans(synID(line("."),col("."),1)),"name") . ">"<CR>
+    nnoremap <silent> <c-]> <cmd>lua vim.lsp.buf.declaration()<CR>
+    nnoremap <silent> gd    <cmd>lua vim.lsp.buf.definition()<CR>
+    nnoremap <silent> K     <cmd>lua vim.lsp.buf.hover()<CR>
+    nnoremap <silent> gD    <cmd>lua vim.lsp.buf.implementation()<CR>
+    nnoremap <silent> <c-k> <cmd>lua vim.lsp.buf.signature_help()<CR>
+    nnoremap <silent> 1gD   <cmd>lua vim.lsp.buf.type_definition()<CR>
+    nnoremap <silent> gr    <cmd>lua vim.lsp.buf.references()<CR>
+    nnoremap <leader>rn     <cmd>lua vim.lsp.buf.rename()<CR>
+
+    " Restart servers.
+    command! -nargs=0 LspRestart <cmd>lua vim.lsp.stop_client(vim.lsp.buf_get_clients())
+
+    " Load LSP completion into omni
+    autocmd Filetype javascript,javascriptreact,typescript,typescriptreact,json,css,html setlocal omnifunc=v:lua.vim.lsp.omnifunc
+
+" Autocompletion
+    inoremap <expr> <Tab>   pumvisible() ? "\<C-n>" : "\<Tab>"
+    inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
+    inoremap <expr> <cr>    pumvisible() ? "\<C-y>" : "\<cr>"
+
+    imap <c-space> <Plug>(asyncomplete_force_refresh)
+
+    " Register omni as a completion source
+    call asyncomplete#register_source(asyncomplete#sources#omni#get_source_options({
+    \ 'name': 'omni',
+    \ 'whitelist': ['*'],
+    \ 'blacklist': ['c', 'cpp', 'html'],
+    \ 'completor': function('asyncomplete#sources#omni#completor')
+    \  }))
+
+" Testing
+    nmap <silent> te :TestNearest<CR>
+    nmap <silent> tf :TestFile<CR>
+    nmap <silent> ta :TestSuite<CR>
+    nmap <silent> tt :TestLast<CR>
+
+    let g:test#strategy = 'neovim'
+    let g:test#neovim#term_position = 'vertical'
