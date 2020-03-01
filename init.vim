@@ -20,8 +20,7 @@ call plug#begin()
     Plug 'balanceiskey/vim-framer-syntax'
     Plug 'liuchengxu/space-vim-theme'
     Plug 'arzg/vim-colors-xcode'
-    Plug 'vim-airline/vim-airline'
-    Plug 'vim-airline/vim-airline-themes'
+    Plug 'itchyny/lightline.vim'
     Plug 'christoomey/vim-tmux-navigator'
     Plug 'liuchengxu/vista.vim'
     Plug 'junegunn/rainbow_parentheses.vim'
@@ -36,6 +35,9 @@ call plug#begin()
 
 " Scratch
     Plug 'duff/vim-scratch'
+
+" Formatting
+    Plug 'prettier/vim-prettier', { 'do': 'yarn install' }
 
 " Language Support
     Plug 'sheerun/vim-polyglot'
@@ -57,8 +59,11 @@ call plug#end()
 
 
 """"""""""""""""""
-" Settings - Settings
+" Settings
 """"""""""""""""""
+
+" Leader
+    map <SPACE> <leader>
 
 " Clipboard
     " Use the system clipboard
@@ -72,17 +77,35 @@ call plug#end()
     set lazyredraw
     set cursorline
     set number
+    set noshowmode
 
     " Themes
     set background=dark
     colorscheme space_vim_theme
 
-    " Airline
-    let g:airline_theme = 'base16_spacemacs'
+    " Lightline
+		let g:lightline = {
+      \ 'colorscheme': 'OldHope',
+      \ 'active': {
+      \   'left': [ ['mode', 'paste'],
+      \             ['gitbranch', 'readonly', 'filename', 'modified'] ]
+      \ },
+      \ 'component_function': {
+      \   'gitbranch': 'FugitiveHead'
+      \ }
+      \ }
 
     " Hide fzf status bar
     autocmd! FileType fzf set laststatus=0 noshowmode noruler
           \| autocmd BufLeave <buffer> set laststatus=2 showmode ruler
+
+    " Bind <esc> to close focused floating windows
+    augroup customize_floating_windows
+        au!
+        au BufNew * au OptionSet buftype ++once if has_key(nvim_win_get_config(0), 'anchor')
+            \ | exe 'nno <buffer><nowait><silent> <esc> :<c-u>q!<cr>'
+            \ | endif
+    augroup END
 
 " Terminal window movement mappings
     tnoremap <C-w>h <C-\><C-n><C-w>h
@@ -117,13 +140,13 @@ call plug#end()
     " Set Dockerfile syntax for *.dockerfile
     au BufRead,BufNewFile *.[Dd]ockerfile setf Dockerfile
 
-    " Syntax highlight Markdown fenced blocks
-    let g:vim_markdown_fenced_languages = ['js', 'bash=sh']
-
     let g:polyglot_disabled = ['jsx'] 
 
 " Prettier
-    command! -nargs=0 Prettier :CocCommand prettier.formatFile
+    let g:prettier#autoformat = 0
+
+    " vim-prettier's autoformat does not work for .ts/.tsx out of the box
+    autocmd BufWritePre *.ts,*.tsx,*.jsx,*.js,*.json,*.css,*.md,*.graphql PrettierAsync
 
 " Make 0 go to first character in line
     map 0 ^
@@ -138,18 +161,18 @@ call plug#end()
     " Activate on file types
     augroup rainbow_lisp
       autocmd!
-      autocmd FileType javascript,lisp,clojure RainbowParentheses
+      autocmd FileType javascript,javascriptreact,typescript,typescriptreact,lisp,clojure RainbowParentheses
     augroup END
 
 " Vista
-    " Use coc.nvim LSP symbols.
+    " Use LSP symbols
     let g:vista_default_executive = 'nvim_lsp'
 
-    " Disable special icons (displaying icons requires special font).
+    " Disable special icons (displaying icons requires special font)
     let g:vista#renderer#enable_icon = 0
     let g:vista_icon_indent = ["╰─▸ ", "├─▸ "]
 
-    " Set default width.
+    " Set default width
     let g:vista_sidebar_width = 50
 
 
@@ -165,7 +188,7 @@ call plug#end()
     nnoremap <silent> gr    <cmd>lua vim.lsp.buf.references()<CR>
     nnoremap <leader>rn     <cmd>lua vim.lsp.buf.rename()<CR>
 
-    " Restart servers.
+    " Restart servers
     command! -nargs=0 LspRestart <cmd>lua vim.lsp.stop_client(vim.lsp.buf_get_clients())
 
     " Load LSP completion into omni
