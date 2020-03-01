@@ -24,6 +24,7 @@ call plug#begin()
     Plug 'vim-airline/vim-airline-themes'
     Plug 'christoomey/vim-tmux-navigator'
     Plug 'liuchengxu/vista.vim'
+    Plug 'junegunn/rainbow_parentheses.vim'
 
 " File finder
     Plug '/usr/local/opt/fzf'
@@ -41,19 +42,12 @@ call plug#begin()
     Plug 'hail2u/vim-css3-syntax'
     Plug 'styled-components/vim-styled-components', { 'branch': 'main' }
 
-" Rainbow parentheses
-    Plug 'junegunn/rainbow_parentheses.vim'
-
-" Intellisense
-    Plug 'neoclide/coc.nvim', { 'branch': 'release' }
-
-    " Install the following coc.nvim extensions
-    "   e.g. :CocInstall coc-tsserver
-    "
-    " coc-tsserver    - TSServer support for JavaScript/TypeScript
-    " coc-json        - JSON support
-    " coc-prettier    - Prettier support
-    " coc-marketplace - Easily install new coc.nvim extensions
+" Language servers
+    Plug 'prabirshrestha/async.vim'
+    Plug 'prabirshrestha/vim-lsp'
+    Plug 'mattn/vim-lsp-settings'
+    Plug 'prabirshrestha/asyncomplete.vim'
+    Plug 'prabirshrestha/asyncomplete-lsp.vim'
 
 call plug#end()
 
@@ -146,7 +140,7 @@ call plug#end()
 
 " Vista
     " Use coc.nvim LSP symbols.
-    let g:vista_default_executive = 'coc'
+    " let g:vista_default_executive = 'coc'
 
     " Disable special icons (displaying icons requires special font).
     let g:vista#renderer#enable_icon = 0
@@ -154,63 +148,12 @@ call plug#end()
     " Set default width.
     let g:vista_sidebar_width = 50
 
-" coc.nvim
-    " Update diagnostics every 300 milliseconds.
-    set updatetime=300
 
-    " Use tab for trigger completion with characters ahead and navigate.
-    " Use command ':verbose imap <tab>' to make sure tab is not mapped by other plugin.
-    inoremap <silent><expr> <TAB>
-          \ pumvisible() ? "\<C-n>" :
-          \ <SID>check_back_space() ? "\<TAB>" :
-          \ coc#refresh()
-    inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
+" vim-lsp
+    let g:lsp_signs_error = {'text': '✗'}
+    let g:lsp_signs_warning = {'text': '‼'}
+    let g:lsp_signs_hint = {'text': '>'}
 
-    function! s:check_back_space() abort
-      let col = col('.') - 1
-      return !col || getline('.')[col - 1]  =~# '\s'
-    endfunction
-
-    " Use <c-space> to trigger completion.
-    inoremap <silent><expr> <c-space> coc#refresh()
-
-    " Use <cr> to confirm completion, `<C-g>u` means break undo chain at current position.
-    " Coc only does snippet and additional edit on confirm.
-    inoremap <expr> <cr> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
-
-    " Use `[g` and `]g` to navigate diagnostics
-    nmap <silent> [g <Plug>(coc-diagnostic-prev)
-    nmap <silent> ]g <Plug>(coc-diagnostic-next)
-
-    " Remap keys for gotos
-    nmap <silent> gd <Plug>(coc-definition)
-
-    " Use K to show documentation in preview window
-    nnoremap <silent> K :call <SID>show_documentation()<CR>
-
-    function! s:show_documentation()
-      if (index(['vim','help'], &filetype) >= 0)
-        execute 'h '.expand('<cword>')
-      else
-        call CocAction('doHover')
-      endif
-    endfunction
-
-    " Remap for rename current word
-    nmap <leader>rn <Plug>(coc-rename)
-
-    " Show all diagnostics
-    nnoremap <silent> <space>a  :<C-u>CocList diagnostics<cr>
-
-    " Remap for format selected region
-    xmap <leader>f  <Plug>(coc-format-selected)
-    nmap <leader>f  <Plug>(coc-format-selected)
-
-    " Run jest for current project
-    command! -nargs=0 Jest :call  CocAction('runCommand', 'jest.projectTest')
-
-    " Run jest for current file
-    command! -nargs=0 JestCurrent :call  CocAction('runCommand', 'jest.fileTest', ['%'])
-
-    " Run jest for current test
-    nnoremap <leader>te :call CocAction('runCommand', 'jest.singleTest')<CR>
+map <F10> :echo "hi<" . synIDattr(synID(line("."),col("."),1),"name") . '> trans<'
+\ . synIDattr(synID(line("."),col("."),0),"name") . "> lo<"
+\ . synIDattr(synIDtrans(synID(line("."),col("."),1)),"name") . ">"<CR>
