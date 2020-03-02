@@ -176,6 +176,8 @@ call plug#end()
 
 " Language server
     lua require'nvim_lsp'.tsserver.setup{}
+    lua require'graphql'
+    lua require'nvim_lsp'.graphql.setup{}
 
     nnoremap <silent> <c-]> <cmd>lua vim.lsp.buf.declaration()<CR>
     nnoremap <silent> gd    <cmd>lua vim.lsp.buf.definition()<CR>
