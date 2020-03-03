@@ -216,4 +216,3 @@ call plug#end()
     nmap <silent> tt :TestLast<CR>
 
     let g:test#strategy = 'neovim'
-    let g:test#neovim#term_position = 'vertical'
