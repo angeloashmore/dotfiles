@@ -45,11 +45,13 @@ call plug#begin()
     Plug 'styled-components/vim-styled-components', { 'branch': 'main' }
 
 " Language server
-    Plug 'neovim/nvim-lsp'
+    Plug 'prabirshrestha/async.vim'
+    Plug 'prabirshrestha/vim-lsp'
+    Plug 'mattn/vim-lsp-settings'
 
 " Autocompletion
     Plug 'prabirshrestha/asyncomplete.vim'
-    Plug 'yami-beta/asyncomplete-omni.vim'
+    Plug 'prabirshrestha/asyncomplete-lsp.vim'
 
 " Testing
     Plug 'janko/vim-test'
@@ -166,7 +168,7 @@ call plug#end()
 
 " Vista
     " Use LSP symbols
-    let g:vista_default_executive = 'nvim_lsp'
+    let g:vista_default_executive = 'vim_lsp'
 
     " Disable special icons (displaying icons requires special font)
     let g:vista#renderer#enable_icon = 0
@@ -177,22 +179,26 @@ call plug#end()
 
 
 " Language server
-    lua require'nvim_lsp'.tsserver.setup{}
+    let g:lsp_virtual_text_enabled = 0
+    let g:lsp_highlight_references_enabled = 1
+    let g:lsp_diagnostics_float_cursor = 1
+    let g:lsp_diagnostics_float_delay = 0
+    " lua require'nvim_lsp'.tsserver.setup{}
 
-    nnoremap <silent> <c-]> <cmd>lua vim.lsp.buf.declaration()<CR>
-    nnoremap <silent> gd    <cmd>lua vim.lsp.buf.definition()<CR>
-    nnoremap <silent> K     <cmd>lua vim.lsp.buf.hover()<CR>
-    nnoremap <silent> gD    <cmd>lua vim.lsp.buf.implementation()<CR>
-    nnoremap <silent> <c-k> <cmd>lua vim.lsp.buf.signature_help()<CR>
-    nnoremap <silent> 1gD   <cmd>lua vim.lsp.buf.type_definition()<CR>
-    nnoremap <silent> gr    <cmd>lua vim.lsp.buf.references()<CR>
-    nnoremap <leader>rn     <cmd>lua vim.lsp.buf.rename()<CR>
+    " nnoremap <silent> <c-]> <cmd>lua vim.lsp.buf.declaration()<CR>
+    " nnoremap <silent> gd    <cmd>lua vim.lsp.buf.definition()<CR>
+    " nnoremap <silent> K     <cmd>lua vim.lsp.buf.hover()<CR>
+    " nnoremap <silent> gD    <cmd>lua vim.lsp.buf.implementation()<CR>
+    " nnoremap <silent> <c-k> <cmd>lua vim.lsp.buf.signature_help()<CR>
+    " nnoremap <silent> 1gD   <cmd>lua vim.lsp.buf.type_definition()<CR>
+    " nnoremap <silent> gr    <cmd>lua vim.lsp.buf.references()<CR>
+    " nnoremap <leader>rn     <cmd>lua vim.lsp.buf.rename()<CR>
 
-    " Restart servers
-    command! -nargs=0 LspRestart <cmd>lua vim.lsp.stop_client(vim.lsp.buf_get_clients())
+    " " Restart servers
+    " command! -nargs=0 LspRestart <cmd>lua vim.lsp.stop_client(vim.lsp.buf_get_clients())
 
-    " Load LSP completion into omni
-    autocmd Filetype javascript,javascriptreact,typescript,typescriptreact,json,css,html setlocal omnifunc=v:lua.vim.lsp.omnifunc
+    " " Load LSP completion into omni
+    " autocmd Filetype javascript,javascriptreact,typescript,typescriptreact,json,css,html setlocal omnifunc=v:lua.vim.lsp.omnifunc
 
 " Autocompletion
     inoremap <expr> <Tab>   pumvisible() ? "\<C-n>" : "\<Tab>"
@@ -202,12 +208,12 @@ call plug#end()
     imap <c-space> <Plug>(asyncomplete_force_refresh)
 
     " Register omni as a completion source
-    call asyncomplete#register_source(asyncomplete#sources#omni#get_source_options({
-    \ 'name': 'omni',
-    \ 'whitelist': ['*'],
-    \ 'blacklist': ['c', 'cpp', 'html'],
-    \ 'completor': function('asyncomplete#sources#omni#completor')
-    \  }))
+    " call asyncomplete#register_source(asyncomplete#sources#omni#get_source_options({
+    " \ 'name': 'omni',
+    " \ 'whitelist': ['*'],
+    " \ 'blacklist': ['c', 'cpp', 'html'],
+    " \ 'completor': function('asyncomplete#sources#omni#completor')
+    " \  }))
 
 " Testing
     nmap <silent> te :TestNearest<CR>
