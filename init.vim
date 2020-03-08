@@ -56,6 +56,9 @@ call plug#begin()
 
 call plug#end()
 
+" Custom plugins
+    set rtp+=~/dotfiles/nvim-lsp-nice
+
 
 
 """"""""""""""""""
@@ -178,6 +181,15 @@ call plug#end()
 
 " Language server
     lua require'nvim_lsp'.tsserver.setup{}
+    lua require'nvim_lsp'.sumneko_lua.setup{
+          \ settings = {
+          \  Lua = {
+          \     diagnostics = {
+          \       globals = {"vim"}
+          \     }
+          \   }
+          \ }
+          \ }
 
     nnoremap <silent> <c-]> <cmd>lua vim.lsp.buf.declaration()<CR>
     nnoremap <silent> gd    <cmd>lua vim.lsp.buf.definition()<CR>
@@ -189,7 +201,7 @@ call plug#end()
     nnoremap <leader>rn     <cmd>lua vim.lsp.buf.rename()<CR>
 
     " Restart servers
-    command! -nargs=0 LspRestart <cmd>lua vim.lsp.stop_client(vim.lsp.buf_get_clients())
+    " command! -nargs=0 LspRestart <cmd>lua vim.lsp.stop_client(vim.lsp.buf_get_clients())
 
     " Load LSP completion into omni
     autocmd Filetype javascript,javascriptreact,typescript,typescriptreact,json,css,html setlocal omnifunc=v:lua.vim.lsp.omnifunc
