@@ -180,7 +180,9 @@ call plug#end()
 
 
 " Language server
+    lua require'lsp_eslint'
     lua require'nvim_lsp'.tsserver.setup{}
+    lua require'nvim_lsp'.eslint.setup{}
     lua require'nvim_lsp'.sumneko_lua.setup{
           \ settings = {
           \  Lua = {
@@ -200,11 +202,8 @@ call plug#end()
     nnoremap <silent> gr    <cmd>lua vim.lsp.buf.references()<CR>
     nnoremap <leader>rn     <cmd>lua vim.lsp.buf.rename()<CR>
 
-    " Restart servers
-    " command! -nargs=0 LspRestart <cmd>lua vim.lsp.stop_client(vim.lsp.buf_get_clients())
-
     " Load LSP completion into omni
-    autocmd Filetype javascript,javascriptreact,typescript,typescriptreact,json,css,html setlocal omnifunc=v:lua.vim.lsp.omnifunc
+    autocmd Filetype javascript,javascriptreact,typescript,typescriptreact,json,css,html,lua setlocal omnifunc=v:lua.vim.lsp.omnifunc
 
 " Autocompletion
     inoremap <expr> <Tab>   pumvisible() ? "\<C-n>" : "\<Tab>"
