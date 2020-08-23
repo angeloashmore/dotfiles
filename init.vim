@@ -76,6 +76,7 @@ call plug#end()
     set cursorline
     set number
     syntax sync fromstart
+    set redrawtime=20000
 
     " Themes
     set background=dark
