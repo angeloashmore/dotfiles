@@ -95,6 +95,10 @@ call plug#end()
     tnoremap <C-w>k <C-\><C-n><C-w>k
     tnoremap <C-w>l <C-\><C-n><C-w>l
 
+" Prevent `:Gf` (:Gfetch) or `:gf` when you meant `:GF`
+    command Gf GF
+    command gf GF
+
 " Indention
     filetype plugin indent on
     set tabstop=2
