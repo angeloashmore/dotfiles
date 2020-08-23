@@ -20,10 +20,10 @@ call plug#begin()
     Plug 'balanceiskey/vim-framer-syntax'
     Plug 'liuchengxu/space-vim-theme'
     Plug 'arzg/vim-colors-xcode'
-    Plug 'itchyny/lightline.vim'
+    Plug 'vim-airline/vim-airline'
+    Plug 'vim-airline/vim-airline-themes'
     Plug 'christoomey/vim-tmux-navigator'
     Plug 'liuchengxu/vista.vim'
-    Plug 'junegunn/rainbow_parentheses.vim'
 
 " File finder
     Plug '/usr/local/opt/fzf'
@@ -36,81 +36,58 @@ call plug#begin()
 " Scratch
     Plug 'duff/vim-scratch'
 
-" Formatting
-    Plug 'prettier/vim-prettier', { 'do': 'yarn install' }
-
 " Language Support
     Plug 'sheerun/vim-polyglot'
     Plug 'hail2u/vim-css3-syntax'
     Plug 'styled-components/vim-styled-components', { 'branch': 'main' }
 
-" Language server
-    Plug 'neovim/nvim-lsp'
+" Rainbow parentheses
+    Plug 'junegunn/rainbow_parentheses.vim'
 
-" Autocompletion
-    Plug 'prabirshrestha/asyncomplete.vim'
-    Plug 'yami-beta/asyncomplete-omni.vim'
+" Intellisense
+    Plug 'neoclide/coc.nvim', { 'branch': 'release' }
 
-" Testing
-    Plug 'janko/vim-test'
+    " Install the following coc.nvim extensions
+    "   e.g. :CocInstall coc-tsserver
+    "
+    " coc-tsserver    - TSServer support for JavaScript/TypeScript
+    " coc-json        - JSON support
+    " coc-prettier    - Prettier support
+    " coc-marketplace - Easily install new coc.nvim extensions
 
 call plug#end()
 
 
 
 """"""""""""""""""
-" Settings
+" Settings - Settings
 """"""""""""""""""
-
-" Leader
-    map <SPACE> <leader>
 
 " Clipboard
     " Use the system clipboard
     set clipboard+=unnamedplus
 
     " Fixes an issue where netrw yanks empty line
-    let g:netrw_banner = 0
+    let g:netrw_banner = 1
 
 " UI
     set termguicolors
     set lazyredraw
     set cursorline
     set number
-<<<<<<< HEAD
-    set noshowmode
-=======
     syntax sync fromstart
     set redrawtime=20000
->>>>>>> aa/coc-nvim
 
     " Themes
     set background=dark
     colorscheme space_vim_theme
 
-    " Lightline
-		let g:lightline = {
-      \ 'colorscheme': 'OldHope',
-      \ 'active': {
-      \   'left': [ ['mode', 'paste'],
-      \             ['gitbranch', 'readonly', 'filename', 'modified'] ]
-      \ },
-      \ 'component_function': {
-      \   'gitbranch': 'FugitiveHead'
-      \ }
-      \ }
+    " Airline
+    let g:airline_theme = 'base16_spacemacs'
 
     " Hide fzf status bar
     autocmd! FileType fzf set laststatus=0 noshowmode noruler
           \| autocmd BufLeave <buffer> set laststatus=2 showmode ruler
-
-    " Bind <esc> to close focused floating windows
-    augroup customize_floating_windows
-        au!
-        au BufNew * au OptionSet buftype ++once if has_key(nvim_win_get_config(0), 'anchor')
-            \ | exe 'nno <buffer><nowait><silent> <esc> :<c-u>q!<cr>'
-            \ | endif
-    augroup END
 
 " Terminal window movement mappings
     tnoremap <C-w>h <C-\><C-n><C-w>h
@@ -118,9 +95,8 @@ call plug#end()
     tnoremap <C-w>k <C-\><C-n><C-w>k
     tnoremap <C-w>l <C-\><C-n><C-w>l
 
-" Prevent `:Gf` (:Gfetch) or `:gf` when you meant `:GF`
+" Prevent `:Gf` (:Gfetch) when you meant `:GF`
     command Gf GF
-    command gf GF
 
 " Indention
     filetype plugin indent on
@@ -149,13 +125,13 @@ call plug#end()
     " Set Dockerfile syntax for *.dockerfile
     au BufRead,BufNewFile *.[Dd]ockerfile setf Dockerfile
 
+    " Syntax highlight Markdown fenced blocks
+    let g:vim_markdown_fenced_languages = ['js', 'bash=sh']
+
     let g:polyglot_disabled = ['jsx'] 
 
 " Prettier
-    let g:prettier#autoformat = 0
-
-    " vim-prettier's autoformat does not work for .ts/.tsx out of the box
-    autocmd BufWritePre *.ts,*.tsx,*.jsx,*.js,*.json,*.css,*.md,*.graphql PrettierAsync
+    command! -nargs=0 Prettier :CocCommand prettier.formatFile
 
 " Make 0 go to first character in line
     map 0 ^
@@ -170,64 +146,77 @@ call plug#end()
     " Activate on file types
     augroup rainbow_lisp
       autocmd!
-      autocmd FileType javascript,javascriptreact,typescript,typescriptreact,lisp,clojure RainbowParentheses
+      autocmd FileType javascript,lisp,clojure RainbowParentheses
     augroup END
 
 " Vista
-    " Use LSP symbols
-    let g:vista_default_executive = 'nvim_lsp'
+    " Use coc.nvim LSP symbols.
+    let g:vista_default_executive = 'coc'
 
-    " Disable special icons (displaying icons requires special font)
+    " Disable special icons (displaying icons requires special font).
     let g:vista#renderer#enable_icon = 0
-    let g:vista_icon_indent = ["╰─▸ ", "├─▸ "]
 
-    " Set default width
+    " Set default width.
     let g:vista_sidebar_width = 50
 
+" coc.nvim
+    " Update diagnostics every 300 milliseconds.
+    set updatetime=300
 
-<<<<<<< HEAD
-" Language server
-    lua require'nvim_lsp'.tsserver.setup{}
-=======
+    " Use tab for trigger completion with characters ahead and navigate.
+    " Use command ':verbose imap <tab>' to make sure tab is not mapped by other plugin.
+    inoremap <silent><expr> <TAB>
+          \ pumvisible() ? "\<C-n>" :
+          \ <SID>check_back_space() ? "\<TAB>" :
+          \ coc#refresh()
+    inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
+
+    function! s:check_back_space() abort
+      let col = col('.') - 1
+      return !col || getline('.')[col - 1]  =~# '\s'
+    endfunction
+
+    " Use <c-space> to trigger completion.
+    inoremap <silent><expr> <c-space> coc#refresh()
+
+    " Use <cr> to confirm completion, `<C-g>u` means break undo chain at current position.
+    " Coc only does snippet and additional edit on confirm.
+    inoremap <expr> <cr> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
+
+    " Use `[g` and `]g` to navigate diagnostics
+    nmap <silent> [g <Plug>(coc-diagnostic-prev)
+    nmap <silent> ]g <Plug>(coc-diagnostic-next)
+
     " Remap keys for gotos
     nmap <silent> gd <Plug>(coc-definition)
     nmap <silent> gr <Plug>(coc-references)
->>>>>>> aa/coc-nvim
 
-    nnoremap <silent> <c-]> <cmd>lua vim.lsp.buf.declaration()<CR>
-    nnoremap <silent> gd    <cmd>lua vim.lsp.buf.definition()<CR>
-    nnoremap <silent> K     <cmd>lua vim.lsp.buf.hover()<CR>
-    nnoremap <silent> gD    <cmd>lua vim.lsp.buf.implementation()<CR>
-    nnoremap <silent> <c-k> <cmd>lua vim.lsp.buf.signature_help()<CR>
-    nnoremap <silent> 1gD   <cmd>lua vim.lsp.buf.type_definition()<CR>
-    nnoremap <silent> gr    <cmd>lua vim.lsp.buf.references()<CR>
-    nnoremap <leader>rn     <cmd>lua vim.lsp.buf.rename()<CR>
+    " Use K to show documentation in preview window
+    nnoremap <silent> K :call <SID>show_documentation()<CR>
 
-    " Restart servers
-    command! -nargs=0 LspRestart <cmd>lua vim.lsp.stop_client(vim.lsp.buf_get_clients())
+    function! s:show_documentation()
+      if (index(['vim','help'], &filetype) >= 0)
+        execute 'h '.expand('<cword>')
+      else
+        call CocAction('doHover')
+      endif
+    endfunction
 
-    " Load LSP completion into omni
-    autocmd Filetype javascript,javascriptreact,typescript,typescriptreact,json,css,html setlocal omnifunc=v:lua.vim.lsp.omnifunc
+    " Remap for rename current word
+    nmap <leader>rn <Plug>(coc-rename)
 
-" Autocompletion
-    inoremap <expr> <Tab>   pumvisible() ? "\<C-n>" : "\<Tab>"
-    inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
-    inoremap <expr> <cr>    pumvisible() ? "\<C-y>" : "\<cr>"
+    " Show all diagnostics
+    nnoremap <silent> <space>a  :<C-u>CocList diagnostics<cr>
 
-    imap <c-space> <Plug>(asyncomplete_force_refresh)
+    " Remap for format selected region
+    xmap <leader>f  <Plug>(coc-format-selected)
+    nmap <leader>f  <Plug>(coc-format-selected)
 
-    " Register omni as a completion source
-    call asyncomplete#register_source(asyncomplete#sources#omni#get_source_options({
-    \ 'name': 'omni',
-    \ 'whitelist': ['*'],
-    \ 'blacklist': ['c', 'cpp', 'html'],
-    \ 'completor': function('asyncomplete#sources#omni#completor')
-    \  }))
+    " Run jest for current project
+    command! -nargs=0 Jest :call  CocAction('runCommand', 'jest.projectTest')
 
-" Testing
-    nmap <silent> te :TestNearest<CR>
-    nmap <silent> tf :TestFile<CR>
-    nmap <silent> ta :TestSuite<CR>
-    nmap <silent> tt :TestLast<CR>
+    " Run jest for current file
+    command! -nargs=0 JestCurrent :call  CocAction('runCommand', 'jest.fileTest', ['%'])
 
-    let g:test#strategy = 'neovim'
+    " Run jest for current test
+    nnoremap <leader>te :call CocAction('runCommand', 'jest.singleTest')<CR>
