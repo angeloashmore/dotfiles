@@ -75,6 +75,7 @@ call plug#end()
     set lazyredraw
     set cursorline
     set number
+    set noshowmode
     syntax sync fromstart
     set redrawtime=20000
 
