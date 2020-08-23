@@ -28,6 +28,11 @@ export FZF_DEFAULT_OPTS='
 alias passgen='LC_ALL=C tr -dc "[:alpha:][:alnum:]" < /dev/urandom | head -c 20 | pbcopy'
 
 #
+# Nix
+#
+if [ -e /Users/angeloashmore/.nix-profile/etc/profile.d/nix.sh ]; then . /Users/angeloashmore/.nix-profile/etc/profile.d/nix.sh; fi # added by Nix installer
+
+#
 # Homebrew
 #
 

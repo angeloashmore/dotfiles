@@ -77,7 +77,12 @@ call plug#end()
     set lazyredraw
     set cursorline
     set number
+<<<<<<< HEAD
     set noshowmode
+=======
+    syntax sync fromstart
+    set redrawtime=20000
+>>>>>>> aa/coc-nvim
 
     " Themes
     set background=dark
@@ -112,6 +117,10 @@ call plug#end()
     tnoremap <C-w>j <C-\><C-n><C-w>j
     tnoremap <C-w>k <C-\><C-n><C-w>k
     tnoremap <C-w>l <C-\><C-n><C-w>l
+
+" Prevent `:Gf` (:Gfetch) or `:gf` when you meant `:GF`
+    command Gf GF
+    command gf GF
 
 " Indention
     filetype plugin indent on
@@ -176,8 +185,14 @@ call plug#end()
     let g:vista_sidebar_width = 50
 
 
+<<<<<<< HEAD
 " Language server
     lua require'nvim_lsp'.tsserver.setup{}
+=======
+    " Remap keys for gotos
+    nmap <silent> gd <Plug>(coc-definition)
+    nmap <silent> gr <Plug>(coc-references)
+>>>>>>> aa/coc-nvim
 
     nnoremap <silent> <c-]> <cmd>lua vim.lsp.buf.declaration()<CR>
     nnoremap <silent> gd    <cmd>lua vim.lsp.buf.definition()<CR>
