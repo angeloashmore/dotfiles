@@ -185,6 +185,7 @@ call plug#end()
 
     " Remap keys for gotos
     nmap <silent> gd <Plug>(coc-definition)
+    nmap <silent> gr <Plug>(coc-references)
 
     " Use K to show documentation in preview window
     nnoremap <silent> K :call <SID>show_documentation()<CR>
