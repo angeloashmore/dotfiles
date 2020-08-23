@@ -68,7 +68,7 @@ call plug#end()
     set clipboard+=unnamedplus
 
     " Fixes an issue where netrw yanks empty line
-    let g:netrw_banner = 0
+    let g:netrw_banner = 1
 
 " UI
     set termguicolors
